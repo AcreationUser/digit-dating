@@ -1,0 +1,1194 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dating App</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* Safe area для iOS */
+        body {
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px;
+            background: #1a1a1a;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #2a2a2a;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-btn {
+            background: none;
+            border: none;
+            color: #ec4899;
+            font-size: 32px;
+            cursor: pointer;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Content area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Profiles Grid */
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 16px;
+        }
+
+        .profile-card {
+            aspect-ratio: 3/4;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            background: #1a1a1a;
+        }
+
+        .profile-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 12px;
+            background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+
+        .profile-card-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .profile-card-age {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .add-profile-card {
+            border: 2px dashed #ec4899;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #ec4899;
+            cursor: pointer;
+        }
+
+        /* Edit Screen */
+        .edit-screen {
+            padding: 16px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 16px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Photos section */
+        .photos-section {
+            margin-bottom: 20px;
+        }
+
+        .photos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .photo-slot {
+            aspect-ratio: 1;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: #1a1a1a;
+            border: 1px dashed #2a2a2a;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .photo-slot img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-slot-add {
+            font-size: 32px;
+            color: #666;
+        }
+
+        .photo-remove {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.7);
+            border: none;
+            color: #fff;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        /* Tags */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            padding: 6px 12px;
+            background: #1a1a1a;
+            border: 1px solid #ec4899;
+            border-radius: 16px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tag-remove {
+            background: none;
+            border: none;
+            color: #ec4899;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .tag-input {
+            padding: 6px 12px;
+            background: #1a1a1a;
+            border: 1px dashed #666;
+            border-radius: 16px;
+            font-size: 14px;
+            max-width: 120px;
+        }
+
+        /* Custom fields */
+        .custom-fields {
+            margin-top: 20px;
+        }
+
+        .custom-field {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 8px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+
+        .custom-field input {
+            padding: 8px;
+            background: #1a1a1a;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .custom-field-remove {
+            background: none;
+            border: none;
+            color: #ec4899;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .add-field-btn {
+            padding: 8px 16px;
+            background: none;
+            border: 1px dashed #666;
+            border-radius: 8px;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 24px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background: #1a1a1a;
+            color: #fff;
+            border: 1px solid #2a2a2a;
+            margin-top: 12px;
+        }
+
+        /* View Screen */
+        .view-screen {
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-view {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .profile-image-container {
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-indicators {
+            position: absolute;
+            top: 16px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 4px;
+            padding: 0 16px;
+            z-index: 10;
+        }
+
+        .indicator {
+            flex: 1;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+
+        .indicator.active {
+            background: #fff;
+        }
+
+        .profile-info-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 24px 16px 80px;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
+            z-index: 5;
+        }
+
+        .profile-name-age {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .profile-location {
+            color: #ccc;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .profile-bio {
+            font-size: 15px;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .profile-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .profile-tag {
+            padding: 4px 12px;
+            background: rgba(236, 72, 153, 0.2);
+            border: 1px solid #ec4899;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .action-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            gap: 20px;
+            padding: 0 40px;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .action-btn {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-pass {
+            background: #fff;
+            color: #ff4458;
+        }
+
+        .btn-like {
+            background: linear-gradient(135deg, #ec4899, #8b5cf6);
+            color: #fff;
+        }
+
+        .btn-info {
+            background: #fff;
+            color: #8b5cf6;
+        }
+
+        /* Info modal */
+        .info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: none;
+            overflow-y: auto;
+            padding: 60px 20px 20px;
+        }
+
+        .info-modal.active {
+            display: block;
+        }
+
+        .info-modal-content {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .info-close {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 101;
+        }
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .info-label {
+            color: #999;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 16px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Empty state */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #666;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <button class="header-btn" id="backBtn" style="display: none;">←</button>
+            <h1 id="headerTitle">Профили</h1>
+            <button class="header-btn" id="modeBtn">👤</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Profiles List -->
+            <div id="listScreen" class="profiles-grid">
+                <!-- Profiles will be rendered here -->
+            </div>
+
+            <!-- Edit Screen -->
+            <div id="editScreen" class="edit-screen hidden">
+                <div class="photos-section">
+                    <label>Фото (до 5)</label>
+                    <div class="photos-grid" id="photosGrid">
+                        <!-- Photo slots will be rendered here -->
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="nameInput" placeholder="Имя">
+                    </div>
+                    <div class="form-group">
+                        <label>Возраст</label>
+                        <input type="number" id="ageInput" placeholder="25">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Локация</label>
+                    <input type="text" id="locationInput" placeholder="Город">
+                </div>
+
+                <div class="form-group">
+                    <label>О себе</label>
+                    <textarea id="bioInput" placeholder="Расскажите о себе..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Интересы</label>
+                    <div class="tags-container" id="tagsContainer">
+                        <!-- Tags will be rendered here -->
+                    </div>
+                    <input type="text" class="tag-input" id="tagInput" placeholder="+ интерес">
+                </div>
+
+                <div class="custom-fields">
+                    <label>Дополнительные поля</label>
+                    <div id="customFieldsContainer">
+                        <!-- Custom fields will be rendered here -->
+                    </div>
+                    <button class="add-field-btn" id="addFieldBtn">+ Добавить поле</button>
+                </div>
+
+                <button class="btn btn-primary" id="saveBtn">Сохранить</button>
+                <button class="btn btn-secondary" id="deleteBtn" style="display: none;">Удалить профиль</button>
+            </div>
+
+            <!-- View Screen -->
+            <div id="viewScreen" class="view-screen hidden">
+                <div class="card-container">
+                    <div class="profile-view" id="currentProfile">
+                        <!-- Profile card will be rendered here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info Modal -->
+    <div class="info-modal" id="infoModal">
+        <button class="info-close" id="infoClose">×</button>
+        <div class="info-modal-content" id="infoContent">
+            <!-- Info will be rendered here -->
+        </div>
+    </div>
+
+    <script>
+        // IndexedDB setup
+        let db;
+        const DB_NAME = 'DatingAppDB';
+        const STORE_NAME = 'photos';
+
+        async function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, 1);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    db = request.result;
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        db.createObjectStore(STORE_NAME);
+                    }
+                };
+            });
+        }
+
+        async function savePhoto(id, dataUrl) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put(dataUrl, id);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function getPhoto(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readonly');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(id);
+                
+                request.onsuccess = () => resolve(request.result);
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function deletePhoto(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], 'readwrite');
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(id);
+                
+                request.onsuccess = () => resolve();
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // State
+        let profiles = JSON.parse(localStorage.getItem('dating_profiles') || '[]');
+        let currentScreen = 'list';
+        let editingProfile = null;
+        let viewIndex = 0;
+        let currentPhotoIndex = 0;
+
+        // Initialize
+        async function init() {
+            await initDB();
+            renderList();
+            setupEventListeners();
+        }
+
+        // Render functions
+        function renderList() {
+            const grid = document.getElementById('listScreen');
+            grid.innerHTML = '';
+
+            // Add profile card
+            const addCard = document.createElement('div');
+            addCard.className = 'profile-card add-profile-card';
+            addCard.innerHTML = '+';
+            addCard.onclick = () => createNewProfile();
+            grid.appendChild(addCard);
+
+            // Profile cards
+            profiles.forEach((profile, index) => {
+                const card = document.createElement('div');
+                card.className = 'profile-card';
+                
+                if (profile.photos && profile.photos.length > 0) {
+                    getPhoto(profile.photos[0]).then(dataUrl => {
+                        if (dataUrl) {
+                            const img = document.createElement('img');
+                            img.src = dataUrl;
+                            card.appendChild(img);
+                        }
+                    });
+                }
+
+                const overlay = document.createElement('div');
+                overlay.className = 'profile-card-overlay';
+                overlay.innerHTML = `
+                    <div class="profile-card-name">${profile.name || 'Без имени'}</div>
+                    <div class="profile-card-age">${profile.age || ''}</div>
+                `;
+                card.appendChild(overlay);
+
+                card.onclick = () => editProfile(index);
+                grid.appendChild(card);
+            });
+        }
+
+        async function renderEdit() {
+            const profile = editingProfile || {
+                name: '',
+                age: '',
+                location: '',
+                bio: '',
+                tags: [],
+                photos: [],
+                customFields: []
+            };
+
+            document.getElementById('nameInput').value = profile.name || '';
+            document.getElementById('ageInput').value = profile.age || '';
+            document.getElementById('locationInput').value = profile.location || '';
+            document.getElementById('bioInput').value = profile.bio || '';
+
+            // Render photos
+            const photosGrid = document.getElementById('photosGrid');
+            photosGrid.innerHTML = '';
+            
+            for (let i = 0; i < 5; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'photo-slot';
+                
+                if (profile.photos[i]) {
+                    const dataUrl = await getPhoto(profile.photos[i]);
+                    if (dataUrl) {
+                        const img = document.createElement('img');
+                        img.src = dataUrl;
+                        slot.appendChild(img);
+
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'photo-remove';
+                        removeBtn.innerHTML = '×';
+                        removeBtn.onclick = () => removePhoto(i);
+                        slot.appendChild(removeBtn);
+                    }
+                } else {
+                    slot.innerHTML = '<div class="photo-slot-add">+</div>';
+                    slot.onclick = () => addPhoto(i);
+                }
+                
+                photosGrid.appendChild(slot);
+            }
+
+            // Render tags
+            renderTags();
+
+            // Render custom fields
+            renderCustomFields();
+
+            // Show/hide delete button
+            document.getElementById('deleteBtn').style.display = editingProfile ? 'block' : 'none';
+        }
+
+        function renderTags() {
+            const profile = editingProfile || { tags: [] };
+            const container = document.getElementById('tagsContainer');
+            container.innerHTML = '';
+
+            profile.tags.forEach((tag, index) => {
+                const tagEl = document.createElement('div');
+                tagEl.className = 'tag';
+                tagEl.innerHTML = `
+                    ${tag}
+                    <button class="tag-remove" onclick="removeTag(${index})">×</button>
+                `;
+                container.appendChild(tagEl);
+            });
+        }
+
+        function renderCustomFields() {
+            const profile = editingProfile || { customFields: [] };
+            const container = document.getElementById('customFieldsContainer');
+            container.innerHTML = '';
+
+            profile.customFields.forEach((field, index) => {
+                const fieldEl = document.createElement('div');
+                fieldEl.className = 'custom-field';
+                fieldEl.innerHTML = `
+                    <input type="text" placeholder="Название" value="${field.label}" 
+                           onchange="updateCustomField(${index}, 'label', this.value)">
+                    <input type="text" placeholder="Значение" value="${field.value}" 
+                           onchange="updateCustomField(${index}, 'value', this.value)">
+                    <button class="custom-field-remove" onclick="removeCustomField(${index})">×</button>
+                `;
+                container.appendChild(fieldEl);
+            });
+        }
+
+        async function renderView() {
+            if (profiles.length === 0) {
+                document.getElementById('currentProfile').innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💔</div>
+                        <p>Нет профилей для просмотра</p>
+                    </div>
+                `;
+                return;
+            }
+
+            const profile = profiles[viewIndex];
+            currentPhotoIndex = 0;
+
+            const container = document.getElementById('currentProfile');
+            container.innerHTML = '';
+
+            // Image container
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'profile-image-container';
+
+            // Photo indicators
+            if (profile.photos && profile.photos.length > 1) {
+                const indicators = document.createElement('div');
+                indicators.className = 'photo-indicators';
+                for (let i = 0; i < profile.photos.length; i++) {
+                    const indicator = document.createElement('div');
+                    indicator.className = 'indicator' + (i === 0 ? ' active' : '');
+                    indicator.id = `indicator-${i}`;
+                    indicators.appendChild(indicator);
+                }
+                imageContainer.appendChild(indicators);
+
+                // Click areas for photo navigation
+                const leftArea = document.createElement('div');
+                leftArea.style.cssText = 'position:absolute;top:0;left:0;bottom:0;width:50%;z-index:5;cursor:pointer;';
+                leftArea.onclick = () => previousPhoto();
+                imageContainer.appendChild(leftArea);
+
+                const rightArea = document.createElement('div');
+                rightArea.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:50%;z-index:5;cursor:pointer;';
+                rightArea.onclick = () => nextPhoto();
+                imageContainer.appendChild(rightArea);
+            }
+
+            // Main image
+            const img = document.createElement('img');
+            img.className = 'profile-image';
+            img.id = 'mainProfileImage';
+            
+            if (profile.photos && profile.photos.length > 0) {
+                const dataUrl = await getPhoto(profile.photos[0]);
+                if (dataUrl) img.src = dataUrl;
+            }
+            
+            imageContainer.appendChild(img);
+
+            // Info overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'profile-info-overlay';
+            
+            let tagsHtml = '';
+            if (profile.tags && profile.tags.length > 0) {
+                tagsHtml = '<div class="profile-tags">' + 
+                    profile.tags.map(tag => `<span class="profile-tag">${tag}</span>`).join('') +
+                    '</div>';
+            }
+
+            overlay.innerHTML = `
+                <div class="profile-name-age">${profile.name || 'Без имени'}, ${profile.age || '?'}</div>
+                ${profile.location ? `<div class="profile-location">📍 ${profile.location}</div>` : ''}
+                ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
+                ${tagsHtml}
+            `;
+            imageContainer.appendChild(overlay);
+
+            container.appendChild(imageContainer);
+
+            // Action buttons
+            const actions = document.createElement('div');
+            actions.className = 'action-buttons';
+            actions.innerHTML = `
+                <button class="action-btn btn-pass" onclick="passProfile()">✗</button>
+                <button class="action-btn btn-info" onclick="showInfo()">ℹ</button>
+                <button class="action-btn btn-like" onclick="likeProfile()">♥</button>
+            `;
+            container.appendChild(actions);
+        }
+
+        function showInfo() {
+            const profile = profiles[viewIndex];
+            const modal = document.getElementById('infoModal');
+            const content = document.getElementById('infoContent');
+
+            let html = `
+                <div class="info-section">
+                    <div class="info-label">Имя</div>
+                    <div class="info-value">${profile.name || 'Не указано'}</div>
+                </div>
+                <div class="info-section">
+                    <div class="info-label">Возраст</div>
+                    <div class="info-value">${profile.age || 'Не указан'}</div>
+                </div>
+                <div class="info-section">
+                    <div class="info-label">Локация</div>
+                    <div class="info-value">${profile.location || 'Не указана'}</div>
+                </div>
+                <div class="info-section">
+                    <div class="info-label">О себе</div>
+                    <div class="info-value">${profile.bio || 'Не указано'}</div>
+                </div>
+            `;
+
+            if (profile.tags && profile.tags.length > 0) {
+                html += `
+                    <div class="info-section">
+                        <div class="info-label">Интересы</div>
+                        <div class="info-value">${profile.tags.join(', ')}</div>
+                    </div>
+                `;
+            }
+
+            if (profile.customFields && profile.customFields.length > 0) {
+                profile.customFields.forEach(field => {
+                    html += `
+                        <div class="info-section">
+                            <div class="info-label">${field.label}</div>
+                            <div class="info-value">${field.value}</div>
+                        </div>
+                    `;
+                });
+            }
+
+            content.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        async function nextPhoto() {
+            const profile = profiles[viewIndex];
+            if (!profile.photos || profile.photos.length <= 1) return;
+
+            currentPhotoIndex = (currentPhotoIndex + 1) % profile.photos.length;
+            
+            const img = document.getElementById('mainProfileImage');
+            const dataUrl = await getPhoto(profile.photos[currentPhotoIndex]);
+            if (dataUrl) img.src = dataUrl;
+
+            updateIndicators();
+        }
+
+        async function previousPhoto() {
+            const profile = profiles[viewIndex];
+            if (!profile.photos || profile.photos.length <= 1) return;
+
+            currentPhotoIndex = (currentPhotoIndex - 1 + profile.photos.length) % profile.photos.length;
+            
+            const img = document.getElementById('mainProfileImage');
+            const dataUrl = await getPhoto(profile.photos[currentPhotoIndex]);
+            if (dataUrl) img.src = dataUrl;
+
+            updateIndicators();
+        }
+
+        function updateIndicators() {
+            const profile = profiles[viewIndex];
+            if (!profile.photos || profile.photos.length <= 1) return;
+
+            for (let i = 0; i < profile.photos.length; i++) {
+                const indicator = document.getElementById(`indicator-${i}`);
+                if (indicator) {
+                    indicator.classList.toggle('active', i === currentPhotoIndex);
+                }
+            }
+        }
+
+        function likeProfile() {
+            nextProfile();
+        }
+
+        function passProfile() {
+            nextProfile();
+        }
+
+        function nextProfile() {
+            viewIndex = (viewIndex + 1) % profiles.length;
+            renderView();
+        }
+
+        // Screen switching
+        function showScreen(screen) {
+            currentScreen = screen;
+            
+            document.getElementById('listScreen').classList.toggle('hidden', screen !== 'list');
+            document.getElementById('editScreen').classList.toggle('hidden', screen !== 'edit');
+            document.getElementById('viewScreen').classList.toggle('hidden', screen !== 'view');
+
+            document.getElementById('backBtn').style.display = screen !== 'list' ? 'block' : 'none';
+
+            if (screen === 'list') {
+                document.getElementById('headerTitle').textContent = 'Профили';
+                document.getElementById('modeBtn').innerHTML = '👤';
+            } else if (screen === 'edit') {
+                document.getElementById('headerTitle').textContent = editingProfile ? 'Редактировать' : 'Новый профиль';
+                document.getElementById('modeBtn').innerHTML = '';
+                renderEdit();
+            } else if (screen === 'view') {
+                document.getElementById('headerTitle').textContent = 'Просмотр';
+                document.getElementById('modeBtn').innerHTML = '';
+                renderView();
+            }
+        }
+
+        // Profile management
+        function createNewProfile() {
+            editingProfile = {
+                name: '',
+                age: '',
+                location: '',
+                bio: '',
+                tags: [],
+                photos: [],
+                customFields: []
+            };
+            showScreen('edit');
+        }
+
+        function editProfile(index) {
+            editingProfile = JSON.parse(JSON.stringify(profiles[index]));
+            editingProfile._index = index;
+            showScreen('edit');
+        }
+
+        async function saveProfile() {
+            const profile = editingProfile || {};
+            
+            profile.name = document.getElementById('nameInput').value;
+            profile.age = document.getElementById('ageInput').value;
+            profile.location = document.getElementById('locationInput').value;
+            profile.bio = document.getElementById('bioInput').value;
+
+            if (!profile.name) {
+                alert('Введите имя');
+                return;
+            }
+
+            if (profile._index !== undefined) {
+                profiles[profile._index] = profile;
+                delete profile._index;
+            } else {
+                profiles.push(profile);
+            }
+
+            localStorage.setItem('dating_profiles', JSON.stringify(profiles));
+            editingProfile = null;
+            renderList();
+            showScreen('list');
+        }
+
+        async function deleteProfile() {
+            if (!confirm('Удалить профиль?')) return;
+
+            const profile = editingProfile;
+            
+            // Delete photos
+            if (profile.photos) {
+                for (const photoId of profile.photos) {
+                    await deletePhoto(photoId);
+                }
+            }
+
+            if (profile._index !== undefined) {
+                profiles.splice(profile._index, 1);
+            }
+
+            localStorage.setItem('dating_profiles', JSON.stringify(profiles));
+            editingProfile = null;
+            renderList();
+            showScreen('list');
+        }
+
+        // Photo management
+        function addPhoto(index) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.onchange = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const photoId = Date.now() + '-' + Math.random().toString(36);
+                    await savePhoto(photoId, event.target.result);
+
+                    if (!editingProfile.photos) editingProfile.photos = [];
+                    editingProfile.photos[index] = photoId;
+                    
+                    renderEdit();
+                };
+                reader.readAsDataURL(file);
+            };
+            input.click();
+        }
+
+        async function removePhoto(index) {
+            if (editingProfile.photos[index]) {
+                await deletePhoto(editingProfile.photos[index]);
+                editingProfile.photos.splice(index, 1);
+                renderEdit();
+            }
+        }
+
+        // Tags
+        window.removeTag = function(index) {
+            editingProfile.tags.splice(index, 1);
+            renderTags();
+        };
+
+        // Custom fields
+        window.updateCustomField = function(index, field, value) {
+            editingProfile.customFields[index][field] = value;
+        };
+
+        window.removeCustomField = function(index) {
+            editingProfile.customFields.splice(index, 1);
+            renderCustomFields();
+        };
+
+        // Event listeners
+        function setupEventListeners() {
+            document.getElementById('backBtn').onclick = () => {
+                editingProfile = null;
+                showScreen('list');
+            };
+
+            document.getElementById('modeBtn').onclick = () => {
+                if (currentScreen === 'list') {
+                    viewIndex = 0;
+                    showScreen('view');
+                }
+            };
+
+            document.getElementById('saveBtn').onclick = saveProfile;
+            document.getElementById('deleteBtn').onclick = deleteProfile;
+
+            document.getElementById('tagInput').onkeydown = (e) => {
+                if (e.key === 'Enter' && e.target.value.trim()) {
+                    if (!editingProfile.tags) editingProfile.tags = [];
+                    editingProfile.tags.push(e.target.value.trim());
+                    e.target.value = '';
+                    renderTags();
+                }
+            };
+
+            document.getElementById('addFieldBtn').onclick = () => {
+                if (!editingProfile.customFields) editingProfile.customFields = [];
+                editingProfile.customFields.push({ label: '', value: '' });
+                renderCustomFields();
+            };
+
+            document.getElementById('infoClose').onclick = () => {
+                document.getElementById('infoModal').classList.remove('active');
+            };
+
+            document.getElementById('infoModal').onclick = (e) => {
+                if (e.target.id === 'infoModal') {
+                    document.getElementById('infoModal').classList.remove('active');
+                }
+            };
+        }
+
+        // Global functions for inline handlers
+        window.passProfile = passProfile;
+        window.likeProfile = likeProfile;
+        window.showInfo = showInfo;
+        window.removeTag = removeTag;
+        window.updateCustomField = updateCustomField;
+        window.removeCustomField = removeCustomField;
+
+        // Start app
+        init();
+    </script>
+</body>
+</html>
