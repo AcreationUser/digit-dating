@@ -6,1255 +6,1091 @@
     <title>Dating App</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='s' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%23ec4899'/%3E%3Cstop offset='50%25' style='stop-color:%23a855f7'/%3E%3Cstop offset='100%25' style='stop-color:%233b82f6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='155' y='200' width='160' height='210' rx='24' fill='%231a1a1a' opacity='0.3' transform='rotate(-8 235 305)'/%3E%3Crect x='180' y='180' width='160' height='210' rx='24' fill='url(%23s)'/%3E%3Ccircle cx='260' cy='265' r='28' fill='%23fff' opacity='0.9'/%3E%3Cpath d='M260 255 C260 248 255 244 250 244 C245 244 241 248 241 253 C241 258 245 262 260 276 C275 262 279 258 279 253 C279 248 275 244 270 244 C265 244 260 248 260 255 Z' fill='%23ec4899'/%3E%3C/svg%3E">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin:0; padding:0; box-sizing:border-box; }
 
-        input,
-        textarea,
-        button {
+        input, textarea, button, select {
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
-
-        input:focus,
-        textarea:focus,
-        button:focus {
-            outline: none !important;
-            box-shadow: none !important;
+        input:focus, textarea:focus, button:focus, select:focus {
+            outline: none !important; box-shadow: none !important;
         }
-
-        input,
-        textarea {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+        input, textarea, select {
+            -webkit-appearance: none; -moz-appearance: none; appearance: none;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            overflow: hidden;
-            height: 100vh;
-            height: 100dvh;
+            background: #0a0a0a; color: #fff;
+            overflow: hidden; height: 100vh; height: 100dvh;
         }
 
-        .app-container {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
+        .app-container { height: 100%; display: flex; flex-direction: column; }
 
-        /* Header */
+        /* ── Header ── */
         .header {
-            padding: 16px;
+            padding: 14px 16px;
             background: #1a1a1a;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid #2a2a2a;
+            flex-shrink: 0;
         }
-
         .header h1 {
-            font-size: 24px;
+            font-size: 22px;
             background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
         }
-
         .header-btn {
-            background: none;
-            border: none;
-            color: #ec4899;
-            font-size: 32px;
-            cursor: pointer;
-            padding: 0;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: none; border: none; color: #ec4899;
+            font-size: 28px; cursor: pointer; padding: 0;
+            width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center;
         }
 
-        /* Content area */
-        .content {
-            flex: 1;
-            overflow-y: auto;
-            overflow-x: hidden;
+        /* ── Content ── */
+        .content { flex: 1; overflow: hidden; position: relative; }
+
+        /* ── Tab Bar ── */
+        .tab-bar {
+            display: flex; background: #111;
+            border-top: 1px solid #2a2a2a;
+            flex-shrink: 0;
+        }
+        .tab-btn {
+            flex: 1; padding: 10px 0 12px;
+            background: none; border: none; cursor: pointer;
+            display: flex; flex-direction: column; align-items: center; gap: 3px;
+            color: #555; font-size: 11px; position: relative;
+        }
+        .tab-btn.active { color: #ec4899; }
+        .tab-icon { font-size: 22px; line-height: 1; }
+        .tab-badge {
+            position: absolute; top: 6px; right: calc(50% - 18px);
+            background: #ec4899; color: #fff;
+            font-size: 10px; font-weight: 700;
+            min-width: 16px; height: 16px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            padding: 0 4px;
         }
 
-        /* Profiles Grid */
+        /* ── Screens ── */
+        .screen { position: absolute; inset: 0; overflow-y: auto; overflow-x: hidden; }
+
+        /* ── Profiles Grid ── */
         .profiles-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            padding: 16px;
-            padding-bottom: 40px;
+            display: grid; grid-template-columns: repeat(2,1fr);
+            gap: 12px; padding: 16px; padding-bottom: 20px;
         }
-
         .profile-card {
-            aspect-ratio: 3/4;
-            border-radius: 12px;
-            overflow: hidden;
-            position: relative;
-            cursor: pointer;
-            background: #1a1a1a;
+            aspect-ratio: 3/4; border-radius: 12px;
+            overflow: hidden; position: relative;
+            cursor: pointer; background: #1a1a1a;
         }
-
-        .profile-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
+        .profile-card img { width:100%; height:100%; object-fit:cover; }
         .profile-card-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 12px;
+            position: absolute; bottom:0; left:0; right:0; padding: 12px;
             background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
         }
-
-        .profile-card-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .profile-card-age {
-            color: #999;
-            font-size: 14px;
-        }
-
+        .profile-card-name { font-weight:600; font-size:15px; }
+        .profile-card-age  { color:#999; font-size:13px; }
         .add-profile-card {
             border: 2px dashed #ec4899;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            color: #ec4899;
-            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 48px; color: #ec4899; cursor: pointer;
         }
 
-        /* Edit Screen */
-        .edit-screen {
-            padding: 16px;
-            padding-bottom: 60px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #999;
-            font-size: 14px;
-        }
-
+        /* ── Edit Screen ── */
+        .edit-screen { padding: 16px; padding-bottom: 60px; max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display:block; margin-bottom:8px; color:#999; font-size:14px; }
         .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+        .form-group textarea,
+        .form-group select {
+            width:100%; padding:12px;
+            background:#1a1a1a; border:1px solid #2a2a2a;
+            border-radius:8px; color:#fff; font-size:16px; outline:none;
         }
-
+        .form-group select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23666' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat:no-repeat; background-position:right 12px center; padding-right:36px;
+        }
+        .form-group select option { background:#1a1a1a; }
         .form-group input:focus,
-        .form-group textarea:focus {
-            border-color: #ec4899;
-            outline: none !important;
-            box-shadow: none !important;
-        }
+        .form-group textarea:focus,
+        .form-group select:focus { border-color:#ec4899; }
+        .form-group textarea { resize:none; min-height:100px; font-family:inherit; }
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        #orientationCustomWrap { margin-top:8px; display:none; }
 
-        .form-group textarea {
-            resize: none;
-            min-height: 100px;
-            font-family: inherit;
-        }
-
-        .form-group textarea::-webkit-resizer {
-            display: none;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        /* Photos section */
-        .photos-section {
-            margin-bottom: 20px;
-        }
-
-        .photos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        /* Photos */
+        .photos-section { margin-bottom:20px; }
+        .photos-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-top:8px; }
         .photo-slot {
-            aspect-ratio: 1;
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-            background: #1a1a1a;
-            border: 1px dashed #2a2a2a;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            aspect-ratio:1; border-radius:8px; overflow:hidden; position:relative;
+            background:#1a1a1a; border:1px dashed #2a2a2a;
+            cursor:pointer; display:flex; align-items:center; justify-content:center;
         }
-
-        .photo-slot img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .photo-slot-add {
-            font-size: 32px;
-            color: #666;
-        }
-
+        .photo-slot img { width:100%; height:100%; object-fit:cover; }
+        .photo-slot-add { font-size:32px; color:#666; }
         .photo-remove {
-            position: absolute;
-            top: 4px;
-            right: 4px;
-            background: rgba(0,0,0,0.7);
-            border: none;
-            color: #fff;
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 16px;
+            position:absolute; top:4px; right:4px;
+            background:rgba(0,0,0,0.7); border:none; color:#fff;
+            width:24px; height:24px; border-radius:50%; cursor:pointer; font-size:16px;
         }
 
         /* Tags */
-        .tags-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
+        .tags-container { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
         .tag {
-            padding: 6px 12px;
-            background: #1a1a1a;
-            border: 1px solid #ec4899;
-            border-radius: 16px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            padding:6px 12px; background:#1a1a1a; border:1px solid #ec4899;
+            border-radius:16px; font-size:14px; display:flex; align-items:center; gap:6px;
         }
-
-        .tag-remove {
-            background: none;
-            border: none;
-            color: #ec4899;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
+        .tag-remove { background:none; border:none; color:#ec4899; cursor:pointer; font-size:16px; }
+        .tag-input-row { display:flex; gap:8px; align-items:center; margin-top:8px; }
         .tag-input {
-            padding: 6px 12px;
-            background: #1a1a1a;
-            border: 1px dashed #666;
-            border-radius: 16px;
-            font-size: 14px;
-            max-width: 120px;
-            outline: none;
-            color: #fff;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            padding:6px 12px; background:#1a1a1a; border:1px dashed #666;
+            border-radius:16px; font-size:14px; flex:1; outline:none; color:#fff;
         }
-
-        .tag-input:focus {
-            border-color: #ec4899;
-            border-style: solid;
-            outline: none !important;
-            box-shadow: none !important;
+        .tag-input:focus { border-color:#ec4899; border-style:solid; }
+        .tag-add-btn {
+            padding:6px 14px; background:none; border:1px solid #ec4899;
+            border-radius:16px; color:#ec4899; font-size:14px; cursor:pointer;
         }
 
         /* Custom fields */
-        .custom-fields {
-            margin-top: 20px;
-        }
-
-        .custom-field {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 24px;
-        }
-
-        .custom-field-row {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            gap: 8px;
-            align-items: center;
-        }
-
+        .custom-fields { margin-top:20px; }
+        .custom-field { display:flex; flex-direction:column; gap:8px; margin-bottom:24px; }
+        .custom-field-row { display:grid; grid-template-columns:1fr auto; gap:8px; align-items:center; }
         .custom-field input {
-            padding: 8px;
-            background: #1a1a1a;
-            border: 1px solid #2a2a2a;
-            border-radius: 8px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            padding:8px; background:#1a1a1a; border:1px solid #2a2a2a;
+            border-radius:8px; color:#fff; font-size:14px; outline:none;
         }
-
-        .custom-field input:focus {
-            border-color: #ec4899;
-            outline: none !important;
-            box-shadow: none !important;
-        }
-
-        .custom-field-remove {
-            background: none;
-            border: none;
-            color: #ec4899;
-            font-size: 20px;
-            cursor: pointer;
-        }
-
+        .custom-field input:focus { border-color:#ec4899; }
+        .custom-field-remove { background:none; border:none; color:#ec4899; font-size:20px; cursor:pointer; }
         .add-field-btn {
-            padding: 8px 16px;
-            background: none;
-            border: 1px dashed #666;
-            border-radius: 8px;
-            color: #666;
-            cursor: pointer;
-            font-size: 14px;
-            margin-top: 8px;
-            margin-bottom: 20px;
+            padding:8px 16px; background:none; border:1px dashed #666;
+            border-radius:8px; color:#666; cursor:pointer; font-size:14px;
+            margin-top:8px; margin-bottom:20px;
         }
 
         /* Buttons */
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 24px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-        }
+        .btn { padding:14px 24px; border:none; border-radius:24px; font-size:16px; font-weight:600; cursor:pointer; width:100%; }
+        .btn-primary { background:linear-gradient(135deg,#ec4899,#8b5cf6); color:#fff; }
+        .btn-secondary { background:#1a1a1a; color:#fff; border:1px solid #2a2a2a; margin-top:12px; }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            color: #fff;
-        }
-
-        .btn-secondary {
-            background: #1a1a1a;
-            color: #fff;
-            border: 1px solid #2a2a2a;
-            margin-top: 12px;
-        }
-
-        /* View Screen */
-        .view-screen {
-            position: relative;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .card-container {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-view {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-        }
-
-        .profile-image-container {
-            height: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        /* ── View Screen ── */
+        .view-screen { position:relative; height:100%; display:flex; flex-direction:column; overflow:hidden; }
+        .card-container { flex:1; position:relative; overflow:hidden; }
+        .profile-view { position:absolute; inset:0; }
+        .profile-image-container { height:100%; position:relative; overflow:hidden; }
+        .profile-image { width:100%; height:100%; object-fit:cover; }
 
         .photo-indicators {
-            position: absolute;
-            top: 16px;
-            left: 0;
-            right: 0;
-            display: flex;
-            gap: 4px;
-            padding: 0 16px;
-            z-index: 10;
+            position:absolute; top:16px; left:0; right:0;
+            display:flex; gap:4px; padding:0 16px; z-index:10;
         }
-
-        .indicator {
-            flex: 1;
-            height: 3px;
-            background: rgba(255,255,255,0.3);
-            border-radius: 2px;
-        }
-
-        .indicator.active {
-            background: #fff;
-        }
+        .indicator { flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:2px; }
+        .indicator.active { background:#fff; }
 
         .profile-info-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 24px 16px 80px;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.7) 50%, transparent 100%);
-            z-index: 5;
+            position:absolute; bottom:0; left:0; right:0;
+            padding:24px 16px 90px;
+            background:linear-gradient(to top,rgba(0,0,0,0.92) 0%,rgba(0,0,0,0.6) 55%,transparent 100%);
+            z-index:5; pointer-events:none;
         }
-
-        .profile-name-age {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
+        .profile-name-age { font-size:30px; font-weight:700; margin-bottom:6px; }
+        .profile-location  { color:#ccc; font-size:15px; margin-bottom:10px; }
+        .overlay-pills { display:flex; flex-wrap:wrap; gap:6px; }
+        .overlay-pill {
+            padding:4px 11px;
+            background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.25);
+            border-radius:12px; font-size:13px; color:#eee; backdrop-filter:blur(4px);
         }
-
-        .profile-location {
-            color: #ccc;
-            font-size: 16px;
-            margin-bottom: 12px;
+        .swipe-hint {
+            position:absolute; bottom:86px; left:50%; transform:translateX(-50%);
+            z-index:6; display:flex; flex-direction:column; align-items:center;
+            gap:2px; opacity:0.4; pointer-events:none;
         }
-
-        .profile-bio {
-            font-size: 15px;
-            line-height: 1.5;
-            margin-bottom: 12px;
-        }
-
-        .profile-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .profile-tag {
-            padding: 4px 12px;
-            background: rgba(236, 72, 153, 0.2);
-            border: 1px solid #ec4899;
-            border-radius: 12px;
-            font-size: 13px;
-        }
+        .swipe-hint-line { width:32px; height:3px; background:#fff; border-radius:2px; }
 
         .action-buttons {
-            position: absolute;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: flex;
-            gap: 20px;
-            padding: 0 40px;
-            justify-content: center;
-            z-index: 10;
+            position:absolute; bottom:20px; left:0; right:0;
+            display:flex; gap:20px; padding:0 40px;
+            justify-content:center; z-index:10;
         }
-
         .action-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            border: none;
-            font-size: 28px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            width:64px; height:64px; border-radius:50%; border:none;
+            font-size:28px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center;
+            box-shadow:0 4px 12px rgba(0,0,0,0.3);
+        }
+        .btn-pass { background:#fff; color:#ff4458; }
+        .btn-like { background:linear-gradient(135deg,#ec4899,#8b5cf6); color:#fff; }
+        .btn-info  { background:#fff; color:#8b5cf6; }
+
+        /* ── Bottom Sheet ── */
+        .sheet-backdrop {
+            position:fixed; inset:0; background:rgba(0,0,0,0.55);
+            z-index:50; opacity:0; pointer-events:none; transition:opacity 0.3s;
+        }
+        .sheet-backdrop.active { opacity:1; pointer-events:all; }
+        .bottom-sheet {
+            position:fixed; left:0; right:0; bottom:0; z-index:51;
+            background:#141414; border-radius:20px 20px 0 0;
+            max-height:82dvh; display:flex; flex-direction:column;
+            transform:translateY(100%);
+            transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);
+            will-change:transform;
+        }
+        .bottom-sheet.active { transform:translateY(0); }
+        .sheet-handle-bar { width:36px; height:4px; background:#3a3a3a; border-radius:2px; margin:12px auto 0; flex-shrink:0; }
+        .sheet-header {
+            padding:16px 20px 12px; display:flex;
+            justify-content:space-between; align-items:flex-start;
+            flex-shrink:0; border-bottom:1px solid #2a2a2a;
+        }
+        .sheet-name {
+            font-size:22px; font-weight:700;
+            background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+        }
+        .sheet-close { background:none; border:none; color:#666; font-size:26px; cursor:pointer; padding:0; line-height:1; }
+        .sheet-body { overflow-y:auto; padding:16px 20px 32px; flex:1; }
+        .sheet-section { margin-bottom:18px; }
+        .sheet-label { color:#666; font-size:12px; text-transform:uppercase; letter-spacing:0.06em; margin-bottom:6px; }
+        .sheet-value { font-size:16px; color:#f0f0f0; line-height:1.5; }
+        .sheet-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:4px; }
+        .sheet-tag {
+            padding:5px 12px; background:rgba(236,72,153,0.15);
+            border:1px solid #ec4899; border-radius:12px; font-size:13px;
+        }
+        .sheet-divider { height:1px; background:#2a2a2a; margin:4px 0 18px; }
+
+        /* ── Match Toast ── */
+        .match-toast {
+            position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(0.8);
+            z-index:200; background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            border-radius:20px; padding:28px 36px; text-align:center;
+            opacity:0; pointer-events:none;
+            transition:opacity 0.25s, transform 0.25s;
+        }
+        .match-toast.show { opacity:1; transform:translate(-50%,-50%) scale(1); }
+        .match-toast-icon { font-size:48px; margin-bottom:8px; }
+        .match-toast-text { font-size:22px; font-weight:700; }
+        .match-toast-sub  { font-size:14px; opacity:0.85; margin-top:4px; }
+
+        /* ── Matches Screen ── */
+        .matches-list { padding:16px; display:flex; flex-direction:column; gap:12px; padding-bottom:20px; }
+        .match-item {
+            display:flex; align-items:center; gap:14px;
+            background:#1a1a1a; border-radius:14px; padding:12px;
+            cursor:pointer; border:1px solid #2a2a2a;
+        }
+        .match-item:active { border-color:#ec4899; }
+        .match-avatar {
+            width:56px; height:56px; border-radius:50%;
+            object-fit:cover; background:#2a2a2a; flex-shrink:0;
+        }
+        .match-avatar-placeholder {
+            width:56px; height:56px; border-radius:50%;
+            background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            display:flex; align-items:center; justify-content:center;
+            font-size:22px; flex-shrink:0;
+        }
+        .match-info { flex:1; min-width:0; }
+        .match-name { font-weight:600; font-size:16px; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .match-preview { color:#666; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .match-arrow { color:#444; font-size:18px; flex-shrink:0; }
+        .matches-empty {
+            display:flex; flex-direction:column; align-items:center;
+            justify-content:center; height:60vh;
+            color:#555; text-align:center; padding:40px;
+        }
+        .matches-empty-icon { font-size:56px; margin-bottom:16px; }
+        .matches-empty p { font-size:15px; line-height:1.6; }
+
+        /* ── Chat Screen ── */
+        .chat-screen {
+            position:absolute; inset:0;
+            display:flex; flex-direction:column;
+            background:#0a0a0a;
+        }
+        .chat-header {
+            padding:12px 16px; background:#1a1a1a;
+            display:flex; align-items:center; gap:12px;
+            border-bottom:1px solid #2a2a2a; flex-shrink:0;
+        }
+        .chat-back {
+            background:none; border:none; color:#ec4899;
+            font-size:26px; cursor:pointer; padding:0;
+            width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+        }
+        .chat-header-avatar {
+            width:38px; height:38px; border-radius:50%; object-fit:cover; background:#2a2a2a;
+        }
+        .chat-header-avatar-placeholder {
+            width:38px; height:38px; border-radius:50%;
+            background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            display:flex; align-items:center; justify-content:center; font-size:16px;
+        }
+        .chat-header-name { font-weight:600; font-size:16px; flex:1; }
+
+        .chat-messages { flex:1; overflow-y:auto; padding:16px; display:flex; flex-direction:column; gap:10px; }
+
+        .bubble-wrap { display:flex; flex-direction:column; }
+        .bubble-wrap.me   { align-items:flex-end; }
+        .bubble-wrap.them { align-items:flex-start; }
+
+        .bubble {
+            max-width:75%; padding:10px 14px;
+            border-radius:18px; font-size:15px; line-height:1.5; word-break:break-word;
+        }
+        .bubble.me {
+            background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            color:#fff; border-bottom-right-radius:4px;
+        }
+        .bubble.them {
+            background:#1e1e1e; color:#eee;
+            border:1px solid #2a2a2a; border-bottom-left-radius:4px;
+        }
+        .bubble-time { font-size:11px; color:#555; margin-top:3px; padding:0 2px; }
+
+        .chat-empty {
+            flex:1; display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            color:#444; text-align:center; padding:32px;
+        }
+        .chat-empty-icon { font-size:44px; margin-bottom:12px; }
+
+        .chat-input-area {
+            padding:8px 12px 14px; background:#111;
+            border-top:1px solid #1e1e1e; flex-shrink:0;
+        }
+        .role-toggle {
+            display:flex; margin-bottom:8px;
+            background:#1a1a1a; border-radius:10px; padding:3px;
+            border:1px solid #2a2a2a;
+        }
+        .role-btn {
+            flex:1; padding:7px 8px; background:none; border:none;
+            border-radius:8px; font-size:13px; cursor:pointer; color:#555;
+            white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+        }
+        .role-btn.active { background:#2a2a2a; color:#fff; }
+        .chat-input-row { display:flex; gap:8px; align-items:flex-end; }
+        .chat-textarea {
+            flex:1; padding:10px 14px;
+            background:#1a1a1a; border:1px solid #2a2a2a;
+            border-radius:20px; color:#fff; font-size:15px;
+            font-family:inherit; outline:none; resize:none;
+            max-height:100px; min-height:40px; line-height:1.4;
+        }
+        .chat-textarea:focus { border-color:#ec4899; }
+        .chat-send {
+            width:42px; height:42px; border-radius:50%;
+            background:linear-gradient(135deg,#ec4899,#8b5cf6);
+            border:none; color:#fff; font-size:18px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; flex-shrink:0;
         }
 
-        .btn-pass {
-            background: #fff;
-            color: #ff4458;
-        }
+        .hidden { display:none !important; }
 
-        .btn-like {
-            background: linear-gradient(135deg, #ec4899, #8b5cf6);
-            color: #fff;
-        }
-
-        .btn-info {
-            background: #fff;
-            color: #8b5cf6;
-        }
-
-        /* Info modal */
-        .info-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 100;
-            display: none;
-            overflow-y: auto;
-            padding: 60px 20px 20px;
-        }
-
-        .info-modal.active {
-            display: block;
-        }
-
-        .info-modal-content {
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .info-close {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: none;
-            border: none;
-            color: #fff;
-            font-size: 32px;
-            cursor: pointer;
-            z-index: 101;
-        }
-
-        .info-section {
-            margin-bottom: 20px;
-        }
-
-        .info-label {
-            color: #999;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .info-value {
-            font-size: 16px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* Empty state */
         .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            color: #666;
-            padding: 40px;
-            text-align: center;
+            display:flex; flex-direction:column;
+            align-items:center; justify-content:center;
+            height:100%; color:#666; padding:40px; text-align:center;
         }
-
-        .empty-state-icon {
-            font-size: 64px;
-            margin-bottom: 16px;
-        }
+        .empty-state-icon { font-size:64px; margin-bottom:16px; }
     </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Header -->
-        <div class="header">
-            <button class="header-btn" id="backBtn" style="display: none;">←</button>
-            <h1 id="headerTitle">Профили</h1>
-            <button class="header-btn" id="modeBtn">👤</button>
+<div class="app-container">
+    <div class="header" id="mainHeader">
+        <button class="header-btn" id="backBtn" style="display:none">←</button>
+        <h1 id="headerTitle">Профили</h1>
+        <button class="header-btn" id="modeBtn">👤</button>
+    </div>
+
+    <div class="content" id="mainContent">
+        <!-- Profiles List -->
+        <div id="listScreen" class="screen">
+            <div class="profiles-grid" id="profilesGrid"></div>
         </div>
 
-        <!-- Content -->
-        <div class="content">
-            <!-- Profiles List -->
-            <div id="listScreen" class="profiles-grid">
-                <!-- Profiles will be rendered here -->
-            </div>
-
-            <!-- Edit Screen -->
-            <div id="editScreen" class="edit-screen hidden">
+        <!-- Edit Screen -->
+        <div id="editScreen" class="screen hidden">
+            <div class="edit-screen">
                 <div class="photos-section">
                     <label>Фото (до 5)</label>
-                    <div class="photos-grid" id="photosGrid">
-                        <!-- Photo slots will be rendered here -->
+                    <div class="photos-grid" id="photosGrid"></div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group"><label>Имя</label><input type="text" id="nameInput" placeholder="Имя"></div>
+                    <div class="form-group"><label>Возраст</label><input type="number" id="ageInput" placeholder="25"></div>
+                </div>
+                <div class="form-group"><label>Локация</label><input type="text" id="locationInput" placeholder="Город"></div>
+                <div class="form-row">
+                    <div class="form-group"><label>Рост (см)</label><input type="number" id="heightInput" placeholder="170"></div>
+                    <div class="form-group">
+                        <label>Знак зодиака</label>
+                        <select id="zodiacInput">
+                            <option value="">— не указан</option>
+                            <option>♈ Овен</option><option>♉ Телец</option><option>♊ Близнецы</option>
+                            <option>♋ Рак</option><option>♌ Лев</option><option>♍ Дева</option>
+                            <option>♎ Весы</option><option>♏ Скорпион</option><option>♐ Стрелец</option>
+                            <option>♑ Козерог</option><option>♒ Водолей</option><option>♓ Рыбы</option>
+                        </select>
                     </div>
                 </div>
-
                 <div class="form-row">
                     <div class="form-group">
-                        <label>Имя</label>
-                        <input type="text" id="nameInput" placeholder="Имя">
+                        <label>Ориентация</label>
+                        <select id="orientationInput">
+                            <option value="">— не указана</option>
+                            <option>Гетеро</option><option>Гей</option><option>Лесби</option>
+                            <option>Би</option><option>Пан</option><option>Деми</option>
+                            <option>Эйс</option><option value="__custom__">Другое…</option>
+                        </select>
+                        <div id="orientationCustomWrap">
+                            <input type="text" id="orientationCustom" placeholder="Впишите вариант">
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label>Возраст</label>
-                        <input type="number" id="ageInput" placeholder="25">
+                        <label>Ищет</label>
+                        <select id="goalInput">
+                            <option value="">— не указано</option>
+                            <option>Отношения</option><option>Дружбу</option>
+                            <option>Флирт</option><option>Общение</option><option>Всё подряд</option>
+                        </select>
                     </div>
                 </div>
-
-                <div class="form-group">
-                    <label>Локация</label>
-                    <input type="text" id="locationInput" placeholder="Город">
-                </div>
-
-                <div class="form-group">
-                    <label>О себе</label>
-                    <textarea id="bioInput" placeholder="Расскажите о себе..."></textarea>
-                </div>
-
+                <div class="form-group"><label>О себе</label><textarea id="bioInput" placeholder="Расскажите о себе..."></textarea></div>
                 <div class="form-group">
                     <label>Интересы</label>
-                    <div class="tags-container" id="tagsContainer">
-                        <!-- Tags will be rendered here -->
+                    <div class="tags-container" id="tagsContainer"></div>
+                    <div class="tag-input-row">
+                        <input type="text" class="tag-input" id="tagInput" placeholder="Добавить интерес">
+                        <button class="tag-add-btn" id="tagAddBtn">+ Добавить</button>
                     </div>
-                    <input type="text" class="tag-input" id="tagInput" placeholder="+ интерес">
                 </div>
-
                 <div class="custom-fields">
                     <label>Дополнительные поля</label>
-                    <div id="customFieldsContainer">
-                        <!-- Custom fields will be rendered here -->
-                    </div>
+                    <div id="customFieldsContainer"></div>
                     <button class="add-field-btn" id="addFieldBtn">+ Добавить поле</button>
                 </div>
-
                 <button class="btn btn-primary" id="saveBtn">Сохранить</button>
-                <button class="btn btn-secondary" id="deleteBtn" style="display: none;">Удалить профиль</button>
+                <button class="btn btn-secondary" id="deleteBtn" style="display:none">Удалить профиль</button>
             </div>
+        </div>
 
-            <!-- View Screen -->
-            <div id="viewScreen" class="view-screen hidden">
+        <!-- View Screen -->
+        <div id="viewScreen" class="screen hidden">
+            <div class="view-screen">
                 <div class="card-container">
-                    <div class="profile-view" id="currentProfile">
-                        <!-- Profile card will be rendered here -->
-                    </div>
+                    <div class="profile-view" id="currentProfile"></div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Info Modal -->
-    <div class="info-modal" id="infoModal">
-        <button class="info-close" id="infoClose">×</button>
-        <div class="info-modal-content" id="infoContent">
-            <!-- Info will be rendered here -->
+        <!-- Matches Screen -->
+        <div id="matchesScreen" class="screen hidden">
+            <div class="matches-list" id="matchesList"></div>
         </div>
+
+        <!-- Chat Screen -->
+        <div id="chatScreen" class="chat-screen hidden"></div>
     </div>
 
-    <script>
-        // IndexedDB setup
-        let db;
-        const DB_NAME = 'DatingAppDB';
-        const STORE_NAME = 'photos';
-
-        async function initDB() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, 1);
-                
-                request.onerror = () => reject(request.error);
-                request.onsuccess = () => {
-                    db = request.result;
-                    resolve(db);
-                };
-                
-                request.onupgradeneeded = (event) => {
-                    const db = event.target.result;
-                    if (!db.objectStoreNames.contains(STORE_NAME)) {
-                        db.createObjectStore(STORE_NAME);
-                    }
-                };
-            });
-        }
-
-        async function savePhoto(id, dataUrl) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.put(dataUrl, id);
-                
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        async function getPhoto(id) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction([STORE_NAME], 'readonly');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.get(id);
-                
-                request.onsuccess = () => resolve(request.result);
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        async function deletePhoto(id) {
-            return new Promise((resolve, reject) => {
-                const transaction = db.transaction([STORE_NAME], 'readwrite');
-                const store = transaction.objectStore(STORE_NAME);
-                const request = store.delete(id);
-                
-                request.onsuccess = () => resolve();
-                request.onerror = () => reject(request.error);
-            });
-        }
-
-        // State
-        let profiles = JSON.parse(localStorage.getItem('dating_profiles') || '[]');
-        let currentScreen = 'list';
-        let editingProfile = null;
-        let viewIndex = 0;
-        let currentPhotoIndex = 0;
-
-        // Initialize
-        async function init() {
-            await initDB();
-            renderList();
-            setupEventListeners();
-        }
-
-        // Render functions
-        function renderList() {
-            const grid = document.getElementById('listScreen');
-            grid.innerHTML = '';
-
-            // Add profile card
-            const addCard = document.createElement('div');
-            addCard.className = 'profile-card add-profile-card';
-            addCard.innerHTML = '+';
-            addCard.onclick = () => createNewProfile();
-            grid.appendChild(addCard);
-
-            // Profile cards
-            profiles.forEach((profile, index) => {
-                const card = document.createElement('div');
-                card.className = 'profile-card';
-                
-                if (profile.photos && profile.photos.length > 0) {
-                    getPhoto(profile.photos[0]).then(dataUrl => {
-                        if (dataUrl) {
-                            const img = document.createElement('img');
-                            img.src = dataUrl;
-                            card.appendChild(img);
-                        }
-                    });
-                }
-
-                const overlay = document.createElement('div');
-                overlay.className = 'profile-card-overlay';
-                overlay.innerHTML = `
-                    <div class="profile-card-name">${profile.name || 'Без имени'}</div>
-                    <div class="profile-card-age">${profile.age || ''}</div>
-                `;
-                card.appendChild(overlay);
-
-                card.onclick = () => editProfile(index);
-                grid.appendChild(card);
-            });
-        }
-
-        async function renderEdit() {
-            const profile = editingProfile || {
-                name: '',
-                age: '',
-                location: '',
-                bio: '',
-                tags: [],
-                photos: [],
-                customFields: []
-            };
-
-            document.getElementById('nameInput').value = profile.name || '';
-            document.getElementById('ageInput').value = profile.age || '';
-            document.getElementById('locationInput').value = profile.location || '';
-            document.getElementById('bioInput').value = profile.bio || '';
-
-            // Render photos
-            const photosGrid = document.getElementById('photosGrid');
-            photosGrid.innerHTML = '';
-            
-            for (let i = 0; i < 5; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'photo-slot';
-                
-                if (profile.photos[i]) {
-                    const dataUrl = await getPhoto(profile.photos[i]);
-                    if (dataUrl) {
-                        const img = document.createElement('img');
-                        img.src = dataUrl;
-                        slot.appendChild(img);
-
-                        const removeBtn = document.createElement('button');
-                        removeBtn.className = 'photo-remove';
-                        removeBtn.innerHTML = '×';
-                        removeBtn.onclick = () => removePhoto(i);
-                        slot.appendChild(removeBtn);
-                    }
-                } else {
-                    slot.innerHTML = '<div class="photo-slot-add">+</div>';
-                    slot.onclick = () => addPhoto(i);
-                }
-                
-                photosGrid.appendChild(slot);
-            }
-
-            // Render tags
-            renderTags();
-
-            // Render custom fields
-            renderCustomFields();
-
-            // Show/hide delete button
-            document.getElementById('deleteBtn').style.display = editingProfile ? 'block' : 'none';
-        }
-
-        function renderTags() {
-            const profile = editingProfile || { tags: [] };
-            const container = document.getElementById('tagsContainer');
-            container.innerHTML = '';
-
-            profile.tags.forEach((tag, index) => {
-                const tagEl = document.createElement('div');
-                tagEl.className = 'tag';
-                tagEl.innerHTML = `
-                    ${tag}
-                    <button class="tag-remove" onclick="removeTag(${index})">×</button>
-                `;
-                container.appendChild(tagEl);
-            });
-        }
-
-        function renderCustomFields() {
-            const profile = editingProfile || { customFields: [] };
-            const container = document.getElementById('customFieldsContainer');
-            container.innerHTML = '';
-
-            profile.customFields.forEach((field, index) => {
-                const fieldEl = document.createElement('div');
-                fieldEl.className = 'custom-field';
-                fieldEl.innerHTML = `
-                    <input type="text" placeholder="Название" value="${field.label}" 
-                           onchange="updateCustomField(${index}, 'label', this.value)">
-                    <div class="custom-field-row">
-                        <input type="text" placeholder="Значение" value="${field.value}" 
-                               onchange="updateCustomField(${index}, 'value', this.value)">
-                        <button class="custom-field-remove" onclick="removeCustomField(${index})">×</button>
-                    </div>
-                `;
-                container.appendChild(fieldEl);
-            });
-        }
-
-        async function renderView() {
-            if (profiles.length === 0) {
-                document.getElementById('currentProfile').innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">💔</div>
-                        <p>Нет профилей для просмотра</p>
-                    </div>
-                `;
-                return;
-            }
-
-            const profile = profiles[viewIndex];
-            currentPhotoIndex = 0;
-
-            const container = document.getElementById('currentProfile');
-            container.innerHTML = '';
-
-            // Image container
-            const imageContainer = document.createElement('div');
-            imageContainer.className = 'profile-image-container';
-
-            // Photo indicators
-            if (profile.photos && profile.photos.length > 1) {
-                const indicators = document.createElement('div');
-                indicators.className = 'photo-indicators';
-                for (let i = 0; i < profile.photos.length; i++) {
-                    const indicator = document.createElement('div');
-                    indicator.className = 'indicator' + (i === 0 ? ' active' : '');
-                    indicator.id = `indicator-${i}`;
-                    indicators.appendChild(indicator);
-                }
-                imageContainer.appendChild(indicators);
-
-                // Click areas for photo navigation
-                const leftArea = document.createElement('div');
-                leftArea.style.cssText = 'position:absolute;top:0;left:0;bottom:0;width:50%;z-index:5;cursor:pointer;';
-                leftArea.onclick = () => previousPhoto();
-                imageContainer.appendChild(leftArea);
-
-                const rightArea = document.createElement('div');
-                rightArea.style.cssText = 'position:absolute;top:0;right:0;bottom:0;width:50%;z-index:5;cursor:pointer;';
-                rightArea.onclick = () => nextPhoto();
-                imageContainer.appendChild(rightArea);
-            }
-
-            // Main image
-            const img = document.createElement('img');
-            img.className = 'profile-image';
-            img.id = 'mainProfileImage';
-            
-            if (profile.photos && profile.photos.length > 0) {
-                const dataUrl = await getPhoto(profile.photos[0]);
-                if (dataUrl) img.src = dataUrl;
-            }
-            
-            imageContainer.appendChild(img);
-
-            // Info overlay
-            const overlay = document.createElement('div');
-            overlay.className = 'profile-info-overlay';
-            
-            let tagsHtml = '';
-            if (profile.tags && profile.tags.length > 0) {
-                tagsHtml = '<div class="profile-tags">' + 
-                    profile.tags.map(tag => `<span class="profile-tag">${tag}</span>`).join('') +
-                    '</div>';
-            }
-
-            overlay.innerHTML = `
-                <div class="profile-name-age">${profile.name || 'Без имени'}, ${profile.age || '?'}</div>
-                ${profile.location ? `<div class="profile-location">📍 ${profile.location}</div>` : ''}
-                ${profile.bio ? `<div class="profile-bio">${profile.bio}</div>` : ''}
-                ${tagsHtml}
-            `;
-            imageContainer.appendChild(overlay);
-
-            container.appendChild(imageContainer);
-
-            // Action buttons
-            const actions = document.createElement('div');
-            actions.className = 'action-buttons';
-            actions.innerHTML = `
-                <button class="action-btn btn-pass" onclick="passProfile()">✗</button>
-                <button class="action-btn btn-info" onclick="showInfo()">ℹ</button>
-                <button class="action-btn btn-like" onclick="likeProfile()">♥</button>
-            `;
-            container.appendChild(actions);
-        }
-
-        function showInfo() {
-            const profile = profiles[viewIndex];
-            const modal = document.getElementById('infoModal');
-            const content = document.getElementById('infoContent');
-
-            let html = `
-                <div class="info-section">
-                    <div class="info-label">Имя</div>
-                    <div class="info-value">${profile.name || 'Не указано'}</div>
-                </div>
-                <div class="info-section">
-                    <div class="info-label">Возраст</div>
-                    <div class="info-value">${profile.age || 'Не указан'}</div>
-                </div>
-                <div class="info-section">
-                    <div class="info-label">Локация</div>
-                    <div class="info-value">${profile.location || 'Не указана'}</div>
-                </div>
-                <div class="info-section">
-                    <div class="info-label">О себе</div>
-                    <div class="info-value">${profile.bio || 'Не указано'}</div>
-                </div>
-            `;
-
-            if (profile.tags && profile.tags.length > 0) {
-                html += `
-                    <div class="info-section">
-                        <div class="info-label">Интересы</div>
-                        <div class="info-value">${profile.tags.join(', ')}</div>
-                    </div>
-                `;
-            }
-
-            if (profile.customFields && profile.customFields.length > 0) {
-                profile.customFields.forEach(field => {
-                    html += `
-                        <div class="info-section">
-                            <div class="info-label">${field.label}</div>
-                            <div class="info-value">${field.value}</div>
-                        </div>
-                    `;
-                });
-            }
-
-            content.innerHTML = html;
-            modal.classList.add('active');
-        }
-
-        async function nextPhoto() {
-            const profile = profiles[viewIndex];
-            if (!profile.photos || profile.photos.length <= 1) return;
-
-            currentPhotoIndex = (currentPhotoIndex + 1) % profile.photos.length;
-            
-            const img = document.getElementById('mainProfileImage');
-            const dataUrl = await getPhoto(profile.photos[currentPhotoIndex]);
-            if (dataUrl) img.src = dataUrl;
-
-            updateIndicators();
-        }
-
-        async function previousPhoto() {
-            const profile = profiles[viewIndex];
-            if (!profile.photos || profile.photos.length <= 1) return;
-
-            currentPhotoIndex = (currentPhotoIndex - 1 + profile.photos.length) % profile.photos.length;
-            
-            const img = document.getElementById('mainProfileImage');
-            const dataUrl = await getPhoto(profile.photos[currentPhotoIndex]);
-            if (dataUrl) img.src = dataUrl;
-
-            updateIndicators();
-        }
-
-        function updateIndicators() {
-            const profile = profiles[viewIndex];
-            if (!profile.photos || profile.photos.length <= 1) return;
-
-            for (let i = 0; i < profile.photos.length; i++) {
-                const indicator = document.getElementById(`indicator-${i}`);
-                if (indicator) {
-                    indicator.classList.toggle('active', i === currentPhotoIndex);
-                }
-            }
-        }
-
-        function likeProfile() {
-            nextProfile();
-        }
-
-        function passProfile() {
-            nextProfile();
-        }
-
-        function nextProfile() {
-            viewIndex = (viewIndex + 1) % profiles.length;
-            renderView();
-        }
-
-        // Screen switching
-        function showScreen(screen) {
-            currentScreen = screen;
-            
-            document.getElementById('listScreen').classList.toggle('hidden', screen !== 'list');
-            document.getElementById('editScreen').classList.toggle('hidden', screen !== 'edit');
-            document.getElementById('viewScreen').classList.toggle('hidden', screen !== 'view');
-
-            document.getElementById('backBtn').style.display = screen !== 'list' ? 'block' : 'none';
-
-            if (screen === 'list') {
-                document.getElementById('headerTitle').textContent = 'Профили';
-                document.getElementById('modeBtn').innerHTML = '👤';
-            } else if (screen === 'edit') {
-                document.getElementById('headerTitle').textContent = editingProfile ? 'Редактировать' : 'Новый профиль';
-                document.getElementById('modeBtn').innerHTML = '';
-                renderEdit();
-            } else if (screen === 'view') {
-                document.getElementById('headerTitle').textContent = 'Просмотр';
-                document.getElementById('modeBtn').innerHTML = '';
-                renderView();
-            }
-        }
-
-        // Profile management
-        function createNewProfile() {
-            editingProfile = {
-                name: '',
-                age: '',
-                location: '',
-                bio: '',
-                tags: [],
-                photos: [],
-                customFields: []
-            };
-            showScreen('edit');
-        }
-
-        function editProfile(index) {
-            editingProfile = JSON.parse(JSON.stringify(profiles[index]));
-            editingProfile._index = index;
-            showScreen('edit');
-        }
-
-        async function saveProfile() {
-            const profile = editingProfile || {};
-            
-            profile.name = document.getElementById('nameInput').value;
-            profile.age = document.getElementById('ageInput').value;
-            profile.location = document.getElementById('locationInput').value;
-            profile.bio = document.getElementById('bioInput').value;
-
-            if (!profile.name) {
-                alert('Введите имя');
-                return;
-            }
-
-            if (profile._index !== undefined) {
-                profiles[profile._index] = profile;
-                delete profile._index;
-            } else {
-                profiles.push(profile);
-            }
-
-            localStorage.setItem('dating_profiles', JSON.stringify(profiles));
-            editingProfile = null;
-            renderList();
-            showScreen('list');
-        }
-
-        async function deleteProfile() {
-            if (!confirm('Удалить профиль?')) return;
-
-            const profile = editingProfile;
-            
-            // Delete photos
-            if (profile.photos) {
-                for (const photoId of profile.photos) {
-                    await deletePhoto(photoId);
-                }
-            }
-
-            if (profile._index !== undefined) {
-                profiles.splice(profile._index, 1);
-            }
-
-            localStorage.setItem('dating_profiles', JSON.stringify(profiles));
-            editingProfile = null;
-            renderList();
-            showScreen('list');
-        }
-
-        // Photo management
-        function addPhoto(index) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.onchange = async (e) => {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const reader = new FileReader();
-                reader.onload = async (event) => {
-                    const photoId = Date.now() + '-' + Math.random().toString(36);
-                    await savePhoto(photoId, event.target.result);
-
-                    if (!editingProfile.photos) editingProfile.photos = [];
-                    editingProfile.photos[index] = photoId;
-                    
-                    renderEdit();
-                };
-                reader.readAsDataURL(file);
-            };
-            input.click();
-        }
-
-        async function removePhoto(index) {
-            if (editingProfile.photos[index]) {
-                await deletePhoto(editingProfile.photos[index]);
-                editingProfile.photos.splice(index, 1);
-                renderEdit();
-            }
-        }
-
-        // Tags
-        window.removeTag = function(index) {
-            editingProfile.tags.splice(index, 1);
-            renderTags();
+    <div class="tab-bar" id="tabBar">
+        <button class="tab-btn active" id="tabProfiles" onclick="switchTab('profiles')">
+            <span class="tab-icon">👤</span>
+            <span>Профили</span>
+        </button>
+        <button class="tab-btn" id="tabMatches" onclick="switchTab('matches')">
+            <span class="tab-icon">💬</span>
+            <span>Мэтчи</span>
+            <span class="tab-badge hidden" id="matchBadge"></span>
+        </button>
+    </div>
+</div>
+
+<!-- Bottom Sheet -->
+<div class="sheet-backdrop" id="sheetBackdrop"></div>
+<div class="bottom-sheet" id="bottomSheet">
+    <div class="sheet-handle-bar" id="sheetHandle"></div>
+    <div class="sheet-header">
+        <div class="sheet-name" id="sheetName"></div>
+        <button class="sheet-close" id="sheetClose">×</button>
+    </div>
+    <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<!-- Match Toast -->
+<div class="match-toast" id="matchToast">
+    <div class="match-toast-icon">💖</div>
+    <div class="match-toast-text">Мэтч!</div>
+    <div class="match-toast-sub" id="matchToastSub"></div>
+</div>
+
+<script>
+// ── IndexedDB ──
+let db;
+const DB_NAME = 'DatingAppDB';
+
+async function initDB() {
+    return new Promise((res, rej) => {
+        const req = indexedDB.open(DB_NAME, 2); // v2 adds chats store
+        req.onerror = () => rej(req.error);
+        req.onsuccess = () => { db = req.result; res(db); };
+        req.onupgradeneeded = e => {
+            const d = e.target.result;
+            if (!d.objectStoreNames.contains('photos')) d.createObjectStore('photos');
+            if (!d.objectStoreNames.contains('chats'))  d.createObjectStore('chats');
         };
+    });
+}
+function dbGet(store, key) {
+    return new Promise((res, rej) => {
+        const r = db.transaction([store],'readonly').objectStore(store).get(key);
+        r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+    });
+}
+function dbPut(store, key, val) {
+    return new Promise((res, rej) => {
+        const r = db.transaction([store],'readwrite').objectStore(store).put(val, key);
+        r.onsuccess = res; r.onerror = () => rej(r.error);
+    });
+}
+function dbDel(store, key) {
+    return new Promise((res, rej) => {
+        const r = db.transaction([store],'readwrite').objectStore(store).delete(key);
+        r.onsuccess = res; r.onerror = () => rej(r.error);
+    });
+}
+const savePhoto   = (id, d) => dbPut('photos', id, d);
+const getPhoto    = id      => dbGet('photos', id);
+const deletePhoto = id      => dbDel('photos', id);
+const getChat     = id      => dbGet('chats', id).then(v => v || []);
+const saveChat    = (id, v) => dbPut('chats', id, v);
 
-        // Custom fields
-        window.updateCustomField = function(index, field, value) {
-            editingProfile.customFields[index][field] = value;
-        };
+// ── State ──
+let profiles  = JSON.parse(localStorage.getItem('dating_profiles') || '[]');
+let matches   = JSON.parse(localStorage.getItem('dating_matches')  || '[]');
+let currentScreen    = 'list';
+let editingProfile   = null;
+let viewIndex        = 0;
+let currentPhotoIndex = 0;
+let currentTab       = 'profiles';
+let currentChatIndex = null;
+let chatRole         = 'me';
 
-        window.removeCustomField = function(index) {
-            editingProfile.customFields.splice(index, 1);
-            renderCustomFields();
-        };
+// ── Init ──
+async function init() {
+    await initDB();
+    renderList();
+    renderMatchBadge();
+    setupEventListeners();
+    setupBottomSheet();
+}
 
-        // Event listeners
-        function setupEventListeners() {
-            document.getElementById('backBtn').onclick = () => {
-                editingProfile = null;
-                showScreen('list');
-            };
+// ── Collect form into editingProfile (prevents loss on re-render) ──
+function collectFormData() {
+    if (!editingProfile) return;
+    editingProfile.name     = document.getElementById('nameInput').value;
+    editingProfile.age      = document.getElementById('ageInput').value;
+    editingProfile.location = document.getElementById('locationInput').value;
+    editingProfile.height   = document.getElementById('heightInput').value;
+    editingProfile.zodiac   = document.getElementById('zodiacInput').value;
+    editingProfile.goal     = document.getElementById('goalInput').value;
+    editingProfile.bio      = document.getElementById('bioInput').value;
+    const sel = document.getElementById('orientationInput').value;
+    editingProfile.orientation = sel === '__custom__'
+        ? document.getElementById('orientationCustom').value : sel;
+}
 
-            document.getElementById('modeBtn').onclick = () => {
-                if (currentScreen === 'list') {
-                    viewIndex = 0;
-                    showScreen('view');
-                }
-            };
+// ── Tabs ──
+function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabProfiles').classList.toggle('active', tab === 'profiles');
+    document.getElementById('tabMatches').classList.toggle('active', tab === 'matches');
+    if (tab === 'profiles') {
+        showScreen(['list','view','edit'].includes(currentScreen) ? currentScreen : 'list');
+    } else {
+        showScreen('matches');
+    }
+}
 
-            document.getElementById('saveBtn').onclick = saveProfile;
-            document.getElementById('deleteBtn').onclick = deleteProfile;
+// ── Screens ──
+function showScreen(screen) {
+    currentScreen = screen;
+    ['listScreen','editScreen','viewScreen','matchesScreen','chatScreen']
+        .forEach(id => document.getElementById(id).classList.add('hidden'));
 
-            document.getElementById('tagInput').onkeydown = (e) => {
-                if (e.key === 'Enter' && e.target.value.trim()) {
-                    if (!editingProfile.tags) editingProfile.tags = [];
-                    editingProfile.tags.push(e.target.value.trim());
-                    e.target.value = '';
-                    renderTags();
-                }
-            };
+    const isChat = screen === 'chat';
+    document.getElementById('mainHeader').style.display = isChat ? 'none' : 'flex';
+    document.getElementById('tabBar').style.display     = isChat ? 'none' : 'flex';
 
-            document.getElementById('addFieldBtn').onclick = () => {
-                if (!editingProfile.customFields) editingProfile.customFields = [];
-                editingProfile.customFields.push({ label: '', value: '' });
-                renderCustomFields();
-            };
+    if (screen === 'list') {
+        document.getElementById('listScreen').classList.remove('hidden');
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('headerTitle').textContent = 'Профили';
+        document.getElementById('modeBtn').innerHTML = '👤';
+    } else if (screen === 'edit') {
+        document.getElementById('editScreen').classList.remove('hidden');
+        document.getElementById('backBtn').style.display = 'block';
+        document.getElementById('headerTitle').textContent =
+            editingProfile?._index !== undefined ? 'Редактировать' : 'Новый профиль';
+        document.getElementById('modeBtn').innerHTML = '';
+        renderEdit();
+    } else if (screen === 'view') {
+        document.getElementById('viewScreen').classList.remove('hidden');
+        document.getElementById('backBtn').style.display = 'block';
+        document.getElementById('headerTitle').textContent = 'Просмотр';
+        document.getElementById('modeBtn').innerHTML = '';
+        renderView();
+    } else if (screen === 'matches') {
+        document.getElementById('matchesScreen').classList.remove('hidden');
+        document.getElementById('backBtn').style.display = 'none';
+        document.getElementById('headerTitle').textContent = 'Мэтчи';
+        document.getElementById('modeBtn').innerHTML = '';
+        renderMatches();
+    } else if (screen === 'chat') {
+        document.getElementById('chatScreen').classList.remove('hidden');
+        renderChat();
+    }
+}
 
-            document.getElementById('infoClose').onclick = () => {
-                document.getElementById('infoModal').classList.remove('active');
-            };
+// ── Render list ──
+function renderList() {
+    const grid = document.getElementById('profilesGrid');
+    grid.innerHTML = '';
+    const add = document.createElement('div');
+    add.className = 'profile-card add-profile-card';
+    add.innerHTML = '+'; add.onclick = createNewProfile;
+    grid.appendChild(add);
 
-            document.getElementById('infoModal').onclick = (e) => {
-                if (e.target.id === 'infoModal') {
-                    document.getElementById('infoModal').classList.remove('active');
-                }
-            };
+    profiles.forEach((p, i) => {
+        const card = document.createElement('div');
+        card.className = 'profile-card';
+        if (p.photos?.length) {
+            getPhoto(p.photos[0]).then(url => {
+                if (url) { const img = document.createElement('img'); img.src = url; card.prepend(img); }
+            });
         }
+        const ov = document.createElement('div');
+        ov.className = 'profile-card-overlay';
+        ov.innerHTML = `<div class="profile-card-name">${p.name||'Без имени'}</div>
+                        <div class="profile-card-age">${p.age||''}</div>`;
+        card.appendChild(ov);
+        card.onclick = () => editProfile(i);
+        grid.appendChild(card);
+    });
+}
 
-        // Global functions for inline handlers
-        window.passProfile = passProfile;
-        window.likeProfile = likeProfile;
-        window.showInfo = showInfo;
-        window.removeTag = removeTag;
-        window.updateCustomField = updateCustomField;
-        window.removeCustomField = removeCustomField;
+// ── Render edit ──
+async function renderEdit() {
+    const p = editingProfile || {};
+    document.getElementById('nameInput').value     = p.name     || '';
+    document.getElementById('ageInput').value      = p.age      || '';
+    document.getElementById('locationInput').value = p.location || '';
+    document.getElementById('heightInput').value   = p.height   || '';
+    document.getElementById('zodiacInput').value   = p.zodiac   || '';
+    document.getElementById('goalInput').value     = p.goal     || '';
+    document.getElementById('bioInput').value      = p.bio      || '';
 
-        // Start app
-        init();
-    </script>
+    const presets = ['','Гетеро','Гей','Лесби','Би','Пан','Деми','Эйс'];
+    const oSel = document.getElementById('orientationInput');
+    if (presets.includes(p.orientation || '')) {
+        oSel.value = p.orientation || '';
+        document.getElementById('orientationCustomWrap').style.display = 'none';
+    } else {
+        oSel.value = '__custom__';
+        document.getElementById('orientationCustomWrap').style.display = 'block';
+        document.getElementById('orientationCustom').value = p.orientation || '';
+    }
+
+    const pg = document.getElementById('photosGrid');
+    pg.innerHTML = '';
+    for (let i = 0; i < 5; i++) {
+        const slot = document.createElement('div');
+        slot.className = 'photo-slot';
+        const pid = p.photos?.[i];
+        if (pid) {
+            const url = await getPhoto(pid);
+            if (url) {
+                const img = document.createElement('img'); img.src = url; slot.appendChild(img);
+                const rm = document.createElement('button');
+                rm.className = 'photo-remove'; rm.innerHTML = '×'; rm.onclick = () => removePhoto(i);
+                slot.appendChild(rm);
+            }
+        } else {
+            slot.innerHTML = '<div class="photo-slot-add">+</div>';
+            slot.onclick = () => addPhoto(i);
+        }
+        pg.appendChild(slot);
+    }
+    renderTags(); renderCustomFields();
+    document.getElementById('deleteBtn').style.display = p._index !== undefined ? 'block' : 'none';
+}
+
+function renderTags() {
+    const c = document.getElementById('tagsContainer'); c.innerHTML = '';
+    (editingProfile?.tags || []).forEach((tag, i) => {
+        const el = document.createElement('div');
+        el.className = 'tag';
+        el.innerHTML = `${tag}<button class="tag-remove" onclick="removeTag(${i})">×</button>`;
+        c.appendChild(el);
+    });
+}
+function renderCustomFields() {
+    const c = document.getElementById('customFieldsContainer'); c.innerHTML = '';
+    (editingProfile?.customFields || []).forEach((f, i) => {
+        const el = document.createElement('div'); el.className = 'custom-field';
+        el.innerHTML = `
+            <input type="text" placeholder="Название" value="${f.label||''}" onchange="updateCustomField(${i},'label',this.value)">
+            <div class="custom-field-row">
+                <input type="text" placeholder="Значение" value="${f.value||''}" onchange="updateCustomField(${i},'value',this.value)">
+                <button class="custom-field-remove" onclick="removeCustomField(${i})">×</button>
+            </div>`;
+        c.appendChild(el);
+    });
+}
+
+// ── Render view card ──
+async function renderView() {
+    const cont = document.getElementById('currentProfile');
+    cont.innerHTML = '';
+    if (!profiles.length) {
+        cont.innerHTML = `<div class="empty-state"><div class="empty-state-icon">💔</div><p>Нет профилей</p></div>`;
+        return;
+    }
+    const p = profiles[viewIndex]; currentPhotoIndex = 0;
+    const ic = document.createElement('div'); ic.className = 'profile-image-container';
+
+    if (p.photos?.length > 1) {
+        const inds = document.createElement('div'); inds.className = 'photo-indicators';
+        p.photos.forEach((_,i) => { const d = document.createElement('div'); d.className='indicator'+(i===0?' active':''); d.id=`indicator-${i}`; inds.appendChild(d); });
+        ic.appendChild(inds);
+        const left = document.createElement('div'); left.style.cssText='position:absolute;top:0;left:0;bottom:0;width:40%;z-index:5;cursor:pointer;'; left.onclick=()=>previousPhoto(); ic.appendChild(left);
+        const right = document.createElement('div'); right.style.cssText='position:absolute;top:0;right:0;bottom:0;width:40%;z-index:5;cursor:pointer;'; right.onclick=()=>nextPhoto(); ic.appendChild(right);
+    }
+
+    const img = document.createElement('img'); img.className='profile-image'; img.id='mainProfileImage';
+    if (p.photos?.length) { const url=await getPhoto(p.photos[0]); if(url) img.src=url; }
+    ic.appendChild(img);
+
+    const ov = document.createElement('div'); ov.className='profile-info-overlay';
+    const pills = [p.orientation, p.zodiac, p.height?p.height+' см':''].filter(Boolean);
+    ov.innerHTML = `
+        <div class="profile-name-age">${p.name||'Без имени'}${p.age?', '+p.age:''}</div>
+        ${p.location?`<div class="profile-location">📍 ${p.location}</div>`:''}
+        ${pills.length?`<div class="overlay-pills">${pills.map(t=>`<span class="overlay-pill">${t}</span>`).join('')}</div>`:''}
+    `;
+    ic.appendChild(ov);
+
+    const hint = document.createElement('div'); hint.className='swipe-hint'; hint.innerHTML='<div class="swipe-hint-line"></div>'; ic.appendChild(hint);
+    setupCardSwipe(ic);
+    cont.appendChild(ic);
+
+    const actions = document.createElement('div'); actions.className='action-buttons';
+    actions.innerHTML = `
+        <button class="action-btn btn-pass" onclick="passProfile()">✗</button>
+        <button class="action-btn btn-info"  onclick="openSheet()">ℹ</button>
+        <button class="action-btn btn-like" onclick="likeProfile()">♥</button>
+    `;
+    cont.appendChild(actions);
+}
+
+// ── Matches ──
+function renderMatchBadge() {
+    const b = document.getElementById('matchBadge');
+    if (matches.length) { b.textContent = matches.length; b.classList.remove('hidden'); }
+    else b.classList.add('hidden');
+}
+
+async function renderMatches() {
+    const list = document.getElementById('matchesList'); list.innerHTML = '';
+    if (!matches.length) {
+        list.innerHTML = `<div class="matches-empty"><div class="matches-empty-icon">💭</div><p>Пока нет мэтчей.<br>Листай профили и ставь лайки!</p></div>`;
+        return;
+    }
+    for (const idx of matches) {
+        const p = profiles[idx]; if (!p) continue;
+        const msgs = await getChat(idx);
+        const last = msgs.length ? msgs[msgs.length-1].text : 'Начни разговор…';
+        const preview = last.length > 40 ? last.slice(0,40)+'…' : last;
+
+        const item = document.createElement('div'); item.className = 'match-item';
+        let avatarHtml = `<div class="match-avatar-placeholder">💫</div>`;
+        if (p.photos?.length) { const url=await getPhoto(p.photos[0]); if(url) avatarHtml=`<img class="match-avatar" src="${url}">`; }
+
+        item.innerHTML = `${avatarHtml}
+            <div class="match-info">
+                <div class="match-name">${p.name||'Без имени'}${p.age?', '+p.age:''}</div>
+                <div class="match-preview">${preview}</div>
+            </div>
+            <div class="match-arrow">›</div>`;
+        item.onclick = () => openChat(idx);
+        list.appendChild(item);
+    }
+}
+
+function showMatchToast(name) {
+    const t = document.getElementById('matchToast');
+    document.getElementById('matchToastSub').textContent = `Ты лайкнула ${name}`;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ── Chat ──
+function openChat(profileIndex) {
+    currentChatIndex = profileIndex; chatRole = 'me';
+    showScreen('chat');
+}
+
+async function renderChat() {
+    const cs = document.getElementById('chatScreen'); cs.innerHTML = '';
+    const p = profiles[currentChatIndex]; if (!p) return;
+
+    // Header
+    const header = document.createElement('div'); header.className = 'chat-header';
+    let av = `<div class="chat-header-avatar-placeholder">💫</div>`;
+    if (p.photos?.length) { const url=await getPhoto(p.photos[0]); if(url) av=`<img class="chat-header-avatar" src="${url}">`; }
+    header.innerHTML = `<button class="chat-back" onclick="closeChatBack()">←</button>${av}
+        <div class="chat-header-name">${p.name||'Без имени'}${p.age?', '+p.age:''}</div>`;
+    cs.appendChild(header);
+
+    // Messages
+    const msgsEl = document.createElement('div'); msgsEl.className='chat-messages'; msgsEl.id='chatMessages';
+    const msgs = await getChat(currentChatIndex);
+    if (!msgs.length) {
+        msgsEl.innerHTML = `<div class="chat-empty"><div class="chat-empty-icon">✉️</div><p style="color:#555;font-size:14px">Начни переписку</p></div>`;
+    } else {
+        msgs.forEach(m => msgsEl.appendChild(buildBubble(m)));
+    }
+    cs.appendChild(msgsEl);
+
+    // Input
+    const ia = document.createElement('div'); ia.className='chat-input-area';
+    ia.innerHTML = `
+        <div class="role-toggle">
+            <button class="role-btn active" id="roleBtnMe"   onclick="setRole('me')">Я</button>
+            <button class="role-btn"        id="roleBtnThem" onclick="setRole('them')">${p.name||'Персонаж'}</button>
+        </div>
+        <div class="chat-input-row">
+            <textarea class="chat-textarea" id="chatTextarea" placeholder="Написать..." rows="1"></textarea>
+            <button class="chat-send" onclick="sendMessage()">➤</button>
+        </div>`;
+    cs.appendChild(ia);
+
+    const ta = document.getElementById('chatTextarea');
+    ta.addEventListener('input', () => { ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,100)+'px'; });
+    ta.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
+
+    scrollBottom();
+}
+
+function buildBubble(msg) {
+    const wrap = document.createElement('div'); wrap.className=`bubble-wrap ${msg.role}`;
+    const time = new Date(msg.ts).toLocaleTimeString('ru',{hour:'2-digit',minute:'2-digit'});
+    wrap.innerHTML = `<div class="bubble ${msg.role}">${escHtml(msg.text)}</div><div class="bubble-time">${time}</div>`;
+    return wrap;
+}
+function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>'); }
+
+function setRole(role) {
+    chatRole = role;
+    document.getElementById('roleBtnMe')?.classList.toggle('active', role==='me');
+    document.getElementById('roleBtnThem')?.classList.toggle('active', role==='them');
+}
+
+async function sendMessage() {
+    const ta = document.getElementById('chatTextarea');
+    const text = ta?.value.trim(); if (!text) return;
+    ta.value=''; ta.style.height='auto';
+
+    const msg = { role:chatRole, text, ts:Date.now() };
+    const msgs = await getChat(currentChatIndex);
+    msgs.push(msg);
+    await saveChat(currentChatIndex, msgs);
+
+    const msgsEl = document.getElementById('chatMessages');
+    msgsEl.querySelector('.chat-empty')?.remove();
+    msgsEl.appendChild(buildBubble(msg));
+    scrollBottom();
+}
+
+function scrollBottom() { setTimeout(()=>{ const e=document.getElementById('chatMessages'); if(e) e.scrollTop=e.scrollHeight; },50); }
+
+function closeChatBack() {
+    document.getElementById('mainHeader').style.display = 'flex';
+    document.getElementById('tabBar').style.display = 'flex';
+    currentChatIndex = null;
+    showScreen('matches');
+}
+
+// ── Profile actions ──
+function likeProfile() {
+    const p = profiles[viewIndex];
+    if (!matches.includes(viewIndex)) {
+        matches.push(viewIndex);
+        localStorage.setItem('dating_matches', JSON.stringify(matches));
+        renderMatchBadge();
+        showMatchToast(p.name || 'персонажа');
+    }
+    nextProfile();
+}
+function passProfile() { nextProfile(); }
+function nextProfile() { viewIndex = (viewIndex+1) % profiles.length; renderView(); }
+
+// ── Photo nav ──
+async function nextPhoto() {
+    const p=profiles[viewIndex]; if(!p.photos||p.photos.length<=1) return;
+    currentPhotoIndex=(currentPhotoIndex+1)%p.photos.length;
+    const url=await getPhoto(p.photos[currentPhotoIndex]);
+    const img=document.getElementById('mainProfileImage'); if(url&&img) img.src=url;
+    updateIndicators();
+}
+async function previousPhoto() {
+    const p=profiles[viewIndex]; if(!p.photos||p.photos.length<=1) return;
+    currentPhotoIndex=(currentPhotoIndex-1+p.photos.length)%p.photos.length;
+    const url=await getPhoto(p.photos[currentPhotoIndex]);
+    const img=document.getElementById('mainProfileImage'); if(url&&img) img.src=url;
+    updateIndicators();
+}
+function updateIndicators() {
+    profiles[viewIndex]?.photos?.forEach((_,i)=>{
+        document.getElementById(`indicator-${i}`)?.classList.toggle('active',i===currentPhotoIndex);
+    });
+}
+
+// ── Bottom sheet ──
+function setupBottomSheet() {
+    document.getElementById('sheetClose').onclick = closeSheet;
+    document.getElementById('sheetBackdrop').onclick = closeSheet;
+    const sheet=document.getElementById('bottomSheet'), handle=document.getElementById('sheetHandle');
+    let sy=0;
+    handle.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;sheet.style.transition='none';},{passive:true});
+    handle.addEventListener('touchmove', e=>{const dy=e.touches[0].clientY-sy;if(dy>0)sheet.style.transform=`translateY(${dy}px)`;},{passive:true});
+    handle.addEventListener('touchend',  e=>{sheet.style.transition='';if(e.changedTouches[0].clientY-sy>80)closeSheet();else sheet.style.transform='translateY(0)';});
+}
+function openSheet() {
+    const p=profiles[viewIndex]; if(!p) return;
+    document.getElementById('sheetName').textContent=`${p.name||''}${p.age?', '+p.age:''}`;
+    const row=(l,v)=>v?`<div class="sheet-section"><div class="sheet-label">${l}</div><div class="sheet-value">${v}</div></div>`:'';
+    let html=row('Локация',p.location?'📍 '+p.location:'')+row('Ориентация',p.orientation)+row('Ищет',p.goal)+row('Рост',p.height?p.height+' см':'')+row('Знак зодиака',p.zodiac);
+    if(p.bio) html+=`<div class="sheet-divider"></div>${row('О себе',p.bio)}`;
+    if(p.tags?.length) html+=`<div class="sheet-divider"></div><div class="sheet-section"><div class="sheet-label">Интересы</div><div class="sheet-tags">${p.tags.map(t=>`<span class="sheet-tag">${t}</span>`).join('')}</div></div>`;
+    if(p.customFields?.length){html+='<div class="sheet-divider"></div>';p.customFields.forEach(f=>{html+=row(f.label||'—',f.value);});}
+    document.getElementById('sheetBody').innerHTML=html;
+    document.getElementById('sheetBackdrop').classList.add('active');
+    document.getElementById('bottomSheet').classList.add('active');
+}
+function closeSheet() {
+    document.getElementById('bottomSheet').classList.remove('active');
+    document.getElementById('sheetBackdrop').classList.remove('active');
+    document.getElementById('bottomSheet').style.transform='';
+}
+function setupCardSwipe(el) {
+    let sy=0,st=0;
+    el.addEventListener('touchstart',e=>{sy=e.touches[0].clientY;st=Date.now();},{passive:true});
+    el.addEventListener('touchend',e=>{if(sy-e.changedTouches[0].clientY>50&&Date.now()-st<400)openSheet();},{passive:true});
+}
+
+// ── Profile management ──
+function createNewProfile() {
+    editingProfile={name:'',age:'',location:'',height:'',zodiac:'',orientation:'',goal:'',bio:'',tags:[],photos:[],customFields:[]};
+    showScreen('edit');
+}
+function editProfile(i) {
+    editingProfile=JSON.parse(JSON.stringify(profiles[i])); editingProfile._index=i; showScreen('edit');
+}
+async function saveProfile() {
+    collectFormData();
+    const p=editingProfile; if(!p.name){alert('Введите имя');return;}
+    p.photos=(p.photos||[]).filter(Boolean);
+    if(p._index!==undefined){profiles[p._index]=p;delete p._index;}else profiles.push(p);
+    localStorage.setItem('dating_profiles',JSON.stringify(profiles));
+    editingProfile=null; renderList();
+    currentTab='profiles';
+    document.getElementById('tabProfiles').classList.add('active');
+    document.getElementById('tabMatches').classList.remove('active');
+    showScreen('list');
+}
+async function deleteProfile() {
+    if(!confirm('Удалить профиль?')) return;
+    const p=editingProfile;
+    for(const id of (p.photos||[])){if(id) await deletePhoto(id);}
+    if(p._index!==undefined){
+        matches=matches.filter(i=>i!==p._index).map(i=>i>p._index?i-1:i);
+        localStorage.setItem('dating_matches',JSON.stringify(matches));
+        profiles.splice(p._index,1);
+    }
+    localStorage.setItem('dating_profiles',JSON.stringify(profiles));
+    editingProfile=null; renderList(); renderMatchBadge(); showScreen('list');
+}
+
+// ── Photos ──
+function addPhoto(index) {
+    const input=document.createElement('input'); input.type='file'; input.accept='image/*';
+    input.onchange=async e=>{
+        const file=e.target.files[0]; if(!file) return;
+        const reader=new FileReader();
+        reader.onload=async ev=>{
+            const id=Date.now()+'-'+Math.random().toString(36).slice(2);
+            await savePhoto(id,ev.target.result);
+            if(!editingProfile.photos) editingProfile.photos=[];
+            editingProfile.photos[index]=id; collectFormData(); renderEdit();
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+}
+async function removePhoto(index) {
+    if(editingProfile.photos[index]){
+        await deletePhoto(editingProfile.photos[index]);
+        editingProfile.photos.splice(index,1); collectFormData(); renderEdit();
+    }
+}
+
+// ── Tags ──
+function addTag() {
+    const input=document.getElementById('tagInput'), val=input.value.trim(); if(!val) return;
+    if(!editingProfile.tags) editingProfile.tags=[];
+    editingProfile.tags.push(val); input.value=''; renderTags();
+}
+window.removeTag=i=>{editingProfile.tags.splice(i,1);renderTags();};
+
+// ── Custom fields ──
+window.updateCustomField=(i,f,v)=>{editingProfile.customFields[i][f]=v;};
+window.removeCustomField=i=>{editingProfile.customFields.splice(i,1);renderCustomFields();};
+
+// ── Event listeners ──
+function setupEventListeners() {
+    document.getElementById('backBtn').onclick=()=>{
+        editingProfile=null;
+        showScreen(currentTab==='matches'?'matches':'list');
+    };
+    document.getElementById('modeBtn').onclick=()=>{if(currentScreen==='list'){viewIndex=0;showScreen('view');}};
+    document.getElementById('saveBtn').onclick=saveProfile;
+    document.getElementById('deleteBtn').onclick=deleteProfile;
+    document.getElementById('tagInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addTag();}});
+    document.getElementById('tagAddBtn').onclick=addTag;
+    document.getElementById('addFieldBtn').onclick=()=>{
+        if(!editingProfile.customFields) editingProfile.customFields=[];
+        editingProfile.customFields.push({label:'',value:''}); renderCustomFields();
+    };
+    document.getElementById('orientationInput').addEventListener('change',function(){
+        document.getElementById('orientationCustomWrap').style.display=this.value==='__custom__'?'block':'none';
+        if(this.value!=='__custom__') document.getElementById('orientationCustom').value='';
+    });
+}
+
+window.passProfile=passProfile; window.likeProfile=likeProfile;
+window.openSheet=openSheet; window.setRole=setRole;
+window.sendMessage=sendMessage; window.closeChatBack=closeChatBack;
+window.switchTab=switchTab;
+
+init();
+</script>
 </body>
 </html>
