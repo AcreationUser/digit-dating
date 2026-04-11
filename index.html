@@ -55,6 +55,7 @@
             display: flex; background: #111;
             border-top: 1px solid #2a2a2a;
             flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom, 0px);
         }
         .tab-btn {
             flex: 1; padding: 10px 0 12px;
@@ -460,7 +461,11 @@
                             <option value="">— не указано</option>
                             <option>Отношения</option><option>Дружбу</option>
                             <option>Флирт</option><option>Общение</option><option>Всё подряд</option>
+                            <option value="__custom__">Другое…</option>
                         </select>
+                        <div id="goalCustomWrap" style="display:none;margin-top:8px">
+                            <input type="text" id="goalCustom" placeholder="Впишите вариант">
+                        </div>
                     </div>
                 </div>
                 <div class="form-group"><label>О себе</label><textarea id="bioInput" placeholder="Расскажите о себе..."></textarea></div>
@@ -600,7 +605,9 @@ function collectFormData() {
     editingProfile.location = document.getElementById('locationInput').value;
     editingProfile.height   = document.getElementById('heightInput').value;
     editingProfile.zodiac   = document.getElementById('zodiacInput').value;
-    editingProfile.goal     = document.getElementById('goalInput').value;
+    const gSel = document.getElementById('goalInput').value;
+    editingProfile.goal = gSel === '__custom__'
+        ? document.getElementById('goalCustom').value : gSel;
     editingProfile.bio      = document.getElementById('bioInput').value;
     const sel = document.getElementById('orientationInput').value;
     editingProfile.orientation = sel === '__custom__'
@@ -694,7 +701,16 @@ async function renderEdit() {
     document.getElementById('locationInput').value = p.location || '';
     document.getElementById('heightInput').value   = p.height   || '';
     document.getElementById('zodiacInput').value   = p.zodiac   || '';
-    document.getElementById('goalInput').value     = p.goal     || '';
+    const goalPresets = ['','Отношения','Дружбу','Флирт','Общение','Всё подряд'];
+    const gSel = document.getElementById('goalInput');
+    if (goalPresets.includes(p.goal || '')) {
+        gSel.value = p.goal || '';
+        document.getElementById('goalCustomWrap').style.display = 'none';
+    } else {
+        gSel.value = '__custom__';
+        document.getElementById('goalCustomWrap').style.display = 'block';
+        document.getElementById('goalCustom').value = p.goal || '';
+    }
     document.getElementById('bioInput').value      = p.bio      || '';
 
     const presets = ['','Гетеро','Гей','Лесби','Би','Пан','Деми','Эйс'];
@@ -931,11 +947,13 @@ function closeChatBack() {
 // ── Profile actions ──
 function likeProfile() {
     const p = profiles[viewIndex];
+    // Always show the toast — the animation is the fun part
+    showMatchToast(p.name || 'персонажа');
+    // Add to matches only once — chat history is never lost
     if (!matches.includes(viewIndex)) {
         matches.push(viewIndex);
         localStorage.setItem('dating_matches', JSON.stringify(matches));
         renderMatchBadge();
-        showMatchToast(p.name || 'персонажа');
     }
     nextProfile();
 }
@@ -1082,6 +1100,10 @@ function setupEventListeners() {
     document.getElementById('orientationInput').addEventListener('change',function(){
         document.getElementById('orientationCustomWrap').style.display=this.value==='__custom__'?'block':'none';
         if(this.value!=='__custom__') document.getElementById('orientationCustom').value='';
+    });
+    document.getElementById('goalInput').addEventListener('change',function(){
+        document.getElementById('goalCustomWrap').style.display=this.value==='__custom__'?'block':'none';
+        if(this.value!=='__custom__') document.getElementById('goalCustom').value='';
     });
 }
 
